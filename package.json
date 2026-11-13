@@ -1,0 +1,13 @@
+{
+  "name": "khata-io",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install --omit=dev",
+    "start": "npm --prefix server start",
+    "test": "npm --prefix server test",
+    "db:indexes": "node server/scripts/sync-indexes.js"
+  }
+}

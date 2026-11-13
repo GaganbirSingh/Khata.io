@@ -1,0 +1,63 @@
+# ---------- Credentials: never commit any of these ----------
+# Environment files of every kind, in every folder (including the example file)
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+**/*.env
+env/
+.envrc
+
+# Keys, certificates and secret files
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+*.gpg
+secrets/
+secret/
+**/secrets.*
+**/secret.*
+**/credentials.*
+**/*credentials*.json
+**/*service-account*.json
+**/*serviceAccount*.json
+**/*-sa.json
+.npmrc
+.yarnrc
+.netrc
+.pgpass
+
+# Platform folders that can hold tokens or project secrets
+.vercel/
+.render/
+.netlify/
+.firebase/
+.aws/
+.gcloud/
+
+# ---------- Build output and dependencies ----------
+node_modules/
+client/dist/
+client/dist-demo/
+coverage/
+.cache/
+
+# ---------- Logs, databases and editor files ----------
+*.log
+npm-debug.log*
+*.sqlite
+*.db
+dump/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

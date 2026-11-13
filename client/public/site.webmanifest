@@ -1,0 +1,12 @@
+{
+  "name": "Khata.io",
+  "short_name": "Khata.io",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#98BFCB",
+  "theme_color": "#98BFCB",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

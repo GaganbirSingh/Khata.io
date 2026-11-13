@@ -1,0 +1,33 @@
+{
+  "name": "khata-io-server",
+  "version": "1.0.0",
+  "description": "API for Khata.io",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@google/genai": "^2.27.0",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.4",
+    "multer": "^2.4.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  },
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  }
+}

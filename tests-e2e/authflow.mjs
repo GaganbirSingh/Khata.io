@@ -1,0 +1,67 @@
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
+const B = 'http://localhost:4000';
+const b = await puppeteer.launch({ executablePath: await chromium.executablePath(), args: [...chromium.args.filter((a) => a !== '--single-process'), '--no-sandbox'], headless: true, protocolTimeout: 60000 });
+const p = await b.newPage();
+const errs = [];
+p.on('pageerror', (e) => errs.push(e.message));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const fails = [];
+const check = (c, m) => (c ? console.log('ok:', m) : (fails.push(m), console.log('FAIL:', m)));
+await p.setViewport({ width: 1280, height: 900 });
+const email = `ui${Date.now()}@example.com`;
+
+await p.goto(B + '/signup', { waitUntil: 'networkidle0' });
+check((await p.$eval('main h1', (e) => e.textContent)) === 'Apni dukaan banao', 'signup page');
+await p.evaluate(() => document.querySelector('.ac-submit').click());
+await sleep(300);
+check((await p.$$('.auth-card .error')).length >= 4, 'signup shows field errors');
+check(await p.$('.parchu.mood-sad'), 'Parchu frowns on errors');
+await p.type('#shopName', 'Verma Kirana');
+await p.type('#email', email);
+await p.type('#password', 'longpassword1');
+check(await p.$('.parchu.mood-shy'), 'Parchu covers eyes while typing password');
+await p.focus('.pw-toggle');
+await p.keyboard.press('Enter');
+await sleep(200);
+check((await p.$eval('#password', (e) => e.type)) === 'text' && (await p.$eval('.pw-toggle', (e) => e.getAttribute('aria-pressed'))) === 'true', 'show password works by keyboard');
+check(await p.$('.parchu.mood-peek'), 'Parchu peeks when password is shown');
+await p.click('#ageConfirmed');
+await p.click('#acceptTerms');
+await p.evaluate(() => document.querySelector('.ac-submit').click());
+check(await p.waitForSelector('.parchu.mood-happy', { timeout: 4000 }).catch(() => null), 'Parchu is happy on success');
+await p.waitForFunction(() => location.pathname === '/app', { timeout: 5000 }).catch(() => {});
+check(p.url().endsWith('/app'), 'signup lands in the app');
+
+// log out, then log in
+await p.evaluate(() => fetch('/api/auth/logout', { method: 'POST' }));
+await p.goto(B + '/login', { waitUntil: 'networkidle0' });
+await p.type('#email', email);
+await p.type('#password', 'wrong-password');
+await p.keyboard.press('Enter');
+await p.waitForSelector('.form-error');
+check((await p.$eval('.form-error', (e) => e.textContent)).includes('wrong'), 'wrong password shows an error');
+await p.focus('#password');
+await p.keyboard.down('Control');
+await p.keyboard.press('KeyA');
+await p.keyboard.up('Control');
+await p.keyboard.press('Backspace');
+await p.type('#password', 'longpassword1');
+await p.keyboard.press('Enter');
+await p.waitForFunction(() => location.pathname === '/app', { timeout: 5000 }).catch(() => {});
+check(p.url().endsWith('/app'), 'login lands in the app');
+if (!p.url().endsWith('/app')) console.log('error shown:', await p.$eval('.form-error', (e) => e.textContent).catch(() => 'none'));
+
+// keyboard: first tab stop and switching
+await p.evaluate(() => fetch('/api/auth/logout', { method: 'POST' }));
+await p.goto(B + '/login', { waitUntil: 'networkidle0' });
+await p.keyboard.press('Tab');
+check((await p.evaluate(() => document.activeElement.textContent)) === 'Skip to content', 'skip link first');
+const demoBtn = await p.$('.auth-below .btn-link');
+await demoBtn.evaluate((e) => e.click());
+await p.waitForSelector('[role=dialog]');
+check(true, 'demo dialog opens from login');
+await p.keyboard.press('Escape');
+check(errs.length === 0, `no script errors ${errs.join('|')}`);
+await b.close();
+console.log(`${fails.length} failure(s)`);
